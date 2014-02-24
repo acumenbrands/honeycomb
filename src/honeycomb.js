@@ -1,9 +1,11 @@
 window.Honeycomb = {};
 
-if (jQuery !== undefined && window.jQuery === window.$) {
-  $.fn.honeyhover = function(options) {
-    return $.map(this, function(el, idx) {
-      return new Honeycomb.Hover(el, options);
-    });
-  };
+$.fn.honeyhover = function(options) {
+  return $.each(this, function(idx, el) {
+    this.honey = new Honeycomb.Hover(el, options);
+  });
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+  window.Honeycomb.__bindable = new Bindable().bindAll();
+});

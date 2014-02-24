@@ -1,18 +1,18 @@
-
 describe('Honeycomb.Hover', function() {
   function sharedHoverBehaviorFor(context) {
     describe("(shared)", function() {
-      var MouseOver, hoverzone, hoverFired;
+      var mouseEvent, $hoverzone, hoverzone, hoverFired;
 
       beforeEach(function() {
-        MouseOver = context.MouseEvent
+        mouseEvent = new $.Event(context.mouseEvent, { pageX: 5, pageY: 5});
         jasmine.clock().install();
         $('body').append("<div id='hoverzone'><a>A hoverable link</a></div>");
-        hoverzone = document.getElementById('hoverzone');
+        $hoverzone = $('#hoverzone');
+        hoverzone = $hoverzone[0];
 
         context.before();
 
-        $(hoverzone).on(context.event, function() {
+        $hoverzone.on(context.hoverEvent, function() {
           hoverFired = 'completed';
         });
 
@@ -20,21 +20,21 @@ describe('Honeycomb.Hover', function() {
 
       afterEach(function() {
         jasmine.clock().uninstall();
-        $(hoverzone).remove();
+        $hoverzone.remove();
         hoverFired = undefined;
       });
 
       it('fires a callback after the specified hover delay', function() {
-        hoverzone.dispatchEvent(MouseOver);
-        hoverzone.dispatchEvent(MouseOver);
+        $hoverzone.trigger(mouseEvent);
+        $hoverzone.trigger(mouseEvent);
         jasmine.clock().tick(5);
 
         expect(hoverFired).toBe('completed');
       });
 
       it('does not fire the callback before the specified delay', function() {
-        hoverzone.dispatchEvent(MouseOver);
-        hoverzone.dispatchEvent(MouseOver);
+        $hoverzone.trigger(mouseEvent);
+        $hoverzone.trigger(mouseEvent);
         jasmine.clock().tick(4);
 
         expect(hoverFired).toBe(undefined);
@@ -58,49 +58,37 @@ describe('Honeycomb.Hover', function() {
     });
 
     describe('onmouseout', function() {
-      var context = {};
-
-      beforeEach(function() {
-        context.MouseEvent = document.createEvent('MouseEvents');
-        context.MouseEvent.initMouseEvent('mouseout');
-        context.event = 'hoverout'
-
-        context.before = function() {
-          new Honeycomb.Hover(hoverzone, {
-            outDelay: 5
-          });
+      var context = {
+        mouseEvent: 'mouseleave',
+        hoverEvent: 'hoverout',
+        before: function() {
+          new Honeycomb.Hover(hoverzone, { outDelay: 5 });
         }
-      });
+      };
 
       sharedHoverBehaviorFor(context);
     }); // onmouseout
 
     describe('onmouseover', function() {
-      var context = {};
-
-      beforeEach(function() {
-        context.MouseEvent = document.createEvent('MouseEvents');
-        context.MouseEvent.initMouseEvent('mouseover');
-        context.event = 'hoverin';
-
-        context.before = function() {
-          new Honeycomb.Hover(hoverzone, {
-            overDelay: 5
-          });
+      var context = {
+        mouseEvent: 'mouseover',
+        hoverEvent: 'hoverin',
+        before: function() {
+          new Honeycomb.Hover(hoverzone, { overDelay: 5 });
         }
-      });
+      };
 
       sharedHoverBehaviorFor(context);
     }); // onmouseover
 
   }); // constructor
 
-  describe('#defaults', function() {
+  describe('#options', function() {
     var a = document.createElement('a');
 
     it('sets sensitivity', function() {
       var hover = new Honeycomb.Hover(a);
-      expect(hover.sensitivity).toBe(Honeycomb.Hover.prototype.defaults.sensitivity);
+      expect(hover.sensitivity).toBe(Honeycomb.Options.prototype.defaults.sensitivity);
     });
 
     it('overrides sensitivity', function() {
@@ -110,7 +98,7 @@ describe('Honeycomb.Hover', function() {
 
     it('sets overDelay', function() {
       var hover = new Honeycomb.Hover(a);
-      expect(hover.overDelay).toBe(Honeycomb.Hover.prototype.defaults.overDelay);
+      expect(hover.overDelay).toBe(Honeycomb.Options.prototype.defaults.overDelay);
     });
 
     it('overrides overDelay', function() {
@@ -120,7 +108,7 @@ describe('Honeycomb.Hover', function() {
 
     it('sets outDelay', function() {
       var hover = new Honeycomb.Hover(a);
-      expect(hover.outDelay).toBe(Honeycomb.Hover.prototype.defaults.outDelay);
+      expect(hover.outDelay).toBe(Honeycomb.Options.prototype.defaults.outDelay);
     });
 
     it('overrides outDelay', function() {
@@ -128,17 +116,7 @@ describe('Honeycomb.Hover', function() {
       expect(hover.outDelay).toBe(100);
     });
 
-    it('sets timeout', function() {
-      var hover = new Honeycomb.Hover(a);
-      expect(hover.timeout).toBe(null);
-    });
-
-    it('does not override timeout', function() {
-      var hover = new Honeycomb.Hover(a, { timeout: 1 });
-      expect(hover.timeout).toBe(null);
-    });
-
-  }); // #defaults
+  }); // #options
 
   describe('#off', function() {
     var aTag, hover;
@@ -164,12 +142,9 @@ describe('Honeycomb.Hover', function() {
       $(aTag).on('hoverin', Testable.callback);
       hover.off();
 
-      var event = document.createEvent('MouseEvents')
-      event.initMouseEvent('mouseover');
+      $(aTag).trigger('mouseover');
 
-      aTag.dispatchEvent(event);
-
-      jasmine.clock().tick(Honeycomb.Hover.prototype.defaults.overDelay);
+      jasmine.clock().tick(Honeycomb.Options.prototype.defaults.overDelay);
 
       expect(Testable.callback).not.toHaveBeenCalled();
     });
@@ -178,12 +153,9 @@ describe('Honeycomb.Hover', function() {
       $(aTag).on('hoverout', Testable.callback);
       hover.off();
 
-      var event = document.createEvent('MouseEvents')
-      event.initMouseEvent('mouseout');
+      $(aTag).trigger('mouseleave');
 
-      aTag.dispatchEvent(event);
-
-      jasmine.clock().tick(Honeycomb.Hover.prototype.defaults.outDelay);
+      jasmine.clock().tick(Honeycomb.Options.prototype.defaults.outDelay);
       expect(Testable.callback).not.toHaveBeenCalled();
     });
 
