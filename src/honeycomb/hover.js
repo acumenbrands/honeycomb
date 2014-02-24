@@ -1,5 +1,4 @@
 Honeycomb.Hover = (function() {
-  var self, outIntent, overIntent;
 
   function Hover(el, options) {
     self = this;
@@ -14,8 +13,11 @@ Honeycomb.Hover = (function() {
     this.outDelay    = options.outDelay    || this.defaults.outDelay;
     this.sensitivity = options.sensitivity || this.defaults.sensitivity;
 
-    this.el.addEventListener('mouseover', overIntent);
-    this.el.addEventListener('mouseout', outIntent);
+    this.overIntent = Honeycomb.bind(this.overIntent, this);
+    this.outIntent  = Honeycomb.bind(this.outIntent, this);
+
+    this.el.addEventListener('mouseover', this.overIntent);
+    this.el.addEventListener('mouseout', this.outIntent);
   }
 
   Hover.prototype.defaults = {
@@ -24,45 +26,17 @@ Honeycomb.Hover = (function() {
     outDelay: 0,
   };
 
-  Hover.prototype.off = function() {
-    this.el.removeEventListener('mouseover', overIntent);
-    this.el.removeEventListener('mouseout', outIntent);
+  Hover.prototype.off = function(event) {
+    this.el.removeEventListener('mouseover', this.overIntent);
+    this.el.removeEventListener('mouseout', this.outIntent);
   };
 
-  outIntent = function(e) {
-    clearTimeout(self.timeout);
-
-    self.timeout = setTimeout(function() {
-      var hoverEvent = new CustomEvent('hoverout', { bubble: true, cancellable: true })
-      self.el.dispatchEvent(hoverEvent)
-    }, self.outDelay);
+  Hover.prototype.overIntent = function(event) {
+    new Honeycomb.OverIntent(event, this);
   };
 
-  overIntent = function(e) {
-    var originalOverPosition = new Honeycomb.Mouse(self.el, e),
-        trackedPosition      = new Honeycomb.Mouse(self.el, e).track(),
-        _attempt, _setIntentionDelay;
-
-    _attempt = function() {
-      var mouseMovement = originalOverPosition.compare(trackedPosition), hoverEvent;
-
-      if (self.sensitivity > mouseMovement) {
-        hoverEvent = new CustomEvent('hoverin', { bubble: true, cancellable: true })
-        self.el.dispatchEvent(hoverEvent)
-      } else {
-        originalOverPosition.x = trackedPosition.x
-        originalOverPosition.y = trackedPosition.y
-
-        _setIntentionDelay();
-      }
-    }
-    _setIntentionDelay = function() {
-      clearTimeout(self.timeout);
-      self.timeout = setTimeout(_attempt, self.overDelay);
-    }
-
-    _setIntentionDelay();
-    trackedPosition.removeTracking();
+  Hover.prototype.outIntent = function(event) {
+    new Honeycomb.OutIntent(event, this);
   };
 
   return Hover;
