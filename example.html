@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      .nav ul li {
+        list-style-type: none;
+      }
+
+      .nested-nav {
+        padding-left: 15px;
+        display: none;
+      }
+
+      .hovered {
+        color: red;
+      }
+    </style>
+    <script type="text/javascript" src="spec/lib/jquery-1.8.3.js"></script>
+    <script type="text/javascript" src="src/honeycomb/bindable.js"></script>
+    <script type="text/javascript" src="src/honeycomb.js"></script>
+    <script type="text/javascript" src="src/honeycomb/bind.js"></script>
+    <script type="text/javascript" src="src/honeycomb/over_intent.js"></script>
+    <script type="text/javascript" src="src/honeycomb/out_intent.js"></script>
+    <script type="text/javascript" src="src/honeycomb/hover.js"></script>
+    <script type="text/javascript" src="src/honeycomb/hover_out.js"></script>
+    <script type="text/javascript" src="src/honeycomb/hover_over.js"></script>
+    <script type="text/javascript" src="src/honeycomb/options.js"></script>
+    <script type="text/javascript" src="src/honeycomb/custom_event.js"></script>
+    <script type="text/javascript" src="src/honeycomb/mouse.js"></script>
+    <script type="text/javascript" src="examples/using_jquery.js"></script>
+    <script type="text/javascript" src="examples/using_vanilla.js"></script>
+  </head>
+
+  <body>
+    <section class="nav">
+      <ul>
+        <li><a href="#" data-bindable="honey-hover">Home</a></li>
+        <li><a href="#" data-bindable="honey-hover">About Us</a></li>
+        <li id='nestable'><a href= "#" data-bindable="honey-hover">Example Nested Navigation</a>
+          <ul class="nested-nav">
+            <li><a class='nested-link' href="#">Ex 1.</a></li>
+            <li><a class='nested-link' href="#">Ex 2.</a></li>
+          </ul>
+        </li>
+      </ul>
+    </section>
+  </body>
+</html>

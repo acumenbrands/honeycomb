@@ -1,33 +1,33 @@
 Honeycomb.Mouse = (function() {
-  var self;
 
   function Mouse(el, e) {
-    self = this;
     this.el = el;
     this.event = e;
     this.x = e.pageX;
     this.y = e.pageY;
+
+    this.update = Honeycomb.bind(this.update, this);
   };
 
-  function update(e) {
-    self.x = e.pageX;
-    self.y = e.pageY;
+  Mouse.prototype.track = function() {
+    $(this.el).on('mousemove', this.update);
+    return this;
   };
 
-  Mouse.prototype = {
-    track: function() {
-      this.el.addEventListener('mousemove', update)
-      return this;
-    },
-    removeTracking: function() {
-      this.el.removeEventListener('mousemove', update)
-    },
-    compare: function(mouse) {
-      return Math.sqrt(
-        Math.pow(this.x - mouse.x, 2) +
-        Math.pow(this.y - mouse.y, 2)
-      );
-    }
+  Mouse.prototype.removeTracking = function() {
+    $(this.el).off('mousemove', this.update);
+  };
+
+  Mouse.prototype.compare = function(mouse) {
+    return Math.sqrt(
+      Math.pow(this.x - mouse.x, 2) +
+      Math.pow(this.y - mouse.y, 2)
+    );
+  };
+
+  Mouse.prototype.update = function(e) {
+    this.x = e.pageX;
+    this.y = e.pageY;
   };
 
   return Mouse;
