@@ -4,6 +4,6 @@
   "main": "dist/honeycomb.js",
   "dependencies": {
     "jquery": "1.8.3",
-    "bindable": "https://github.com/modeset/bindable"
+    "bindable": "https://github.com/modeset/bindable.git#master"
   }
 }
