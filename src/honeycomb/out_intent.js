@@ -19,7 +19,6 @@ Honeycomb.OutIntent = (function() {
   };
 
   OutIntent.prototype.dispatch = function() {
-    this.event.currentTarget.dispatchEvent(this.hoverEvent())
     this.event.target.dispatchEvent(this.hoverEvent());
   };
 
