@@ -74,5 +74,6 @@ spec_dir: spec
 #
 src_files:
   - spec/lib/jquery-1.8.3.js
+  - spec/lib/bindable.js
   - src/*.js
   - src/honeycomb/*.js

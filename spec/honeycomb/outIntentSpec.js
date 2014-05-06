@@ -57,6 +57,17 @@ describe("Honeycomb.OutIntent", function() {
       expect(out).toHaveBeenTriggered()
     });
 
+    it('fires only once on the target', function() {
+      obj = { callback: function() {} }
+      callback = spyOn(obj, 'callback')
+      this.$hover.on('hoverout', obj.callback)
+
+      this.$hover.mouseleave()
+      jasmine.clock().tick(1);
+
+      expect(callback.calls.count()).toBe(1)
+    });
+
   });
 
   describe("#hoverEvent", function() {
